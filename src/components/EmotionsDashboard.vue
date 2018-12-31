@@ -5,7 +5,7 @@
         <canvas ref="canvas" id="canvas" width="640" height="480"></canvas>
         <ul>
             <li v-for="c in captures">
-                <img ref="image" v-bind:src="c" height="50" />
+                <img id="img" ref="image" v-bind:src="c" height="50" />
             </li>
             <li>
               {{output}}
@@ -24,13 +24,13 @@
                 canvas: {},
                 captures: [],
                 output: '',
-                image: ''
+                imageToAnalyze: ''
             }
         },
        mounted() {
 
         var self = this;
-        var constraints = { audio: true, video: { width: 1280, height: 720 } };
+        var constraints = { audio: false, video: { width: 1280, height: 720 } };
         navigator.mediaDevices.getUserMedia(constraints)
 .       then(function(mediaStream) {
         self.video = document.querySelector('video');
@@ -47,14 +47,25 @@
         self.canvas = self.$refs.canvas;
         var context = self.canvas.getContext("2d").drawImage(self.video, 0, 0, 640, 480);
         self.captures.push(canvas.toDataURL("image/png"));
-        self.image = self.canvas.toDataURL('image/png');
+
+        var image = self.canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");  // here is the most important part because if you dont replace you will get a DOM 18 exception.
+        var link = document.createElement('a');
+  link.download = "image.png";
+  link.href = image;
+  link.click();
+
+window.location.href=image;
+var url = location.href;
+var regex = new RegExp('/[^/]*$');
+var baseurl = url.replace(regex, '/');
+
           const formData = new FormData();
             formData.append('app_key', 'd08c791a788349a4bcfcaec6818a1c76');
-            formData.append('img', self.image);
+            formData.append('url', baseurl + "static/image.png");
             axios.post("https://api-face.sightcorp.com/api/detect/", formData)
               .then(function (result) {
               self.output = result.data;
-              alert(self.image);
+              alert(baseurl + "static/image.png");
               console.log(result);
           },  function (error) {
               console.log(error);
