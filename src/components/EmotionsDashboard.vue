@@ -54,19 +54,19 @@
   link.href = image;
   link.click();
 
-window.location.href=image;
+window.location.href = image;
 var url = location.href;
-var regex = new RegExp('/[^/]*$');
-var baseurl = url.replace(regex, '/');
+var baseURL = url.substring(0, url.lastIndexOf('#'));
+var imageFile = baseURL + "static/image.png";
 
           const formData = new FormData();
             formData.append('app_key', 'd08c791a788349a4bcfcaec6818a1c76');
-            formData.append('url', baseurl + "static/image.png");
+            formData.append('url', imageFile);
             axios.post("https://api-face.sightcorp.com/api/detect/", formData)
               .then(function (result) {
               self.output = result.data;
-              alert(baseurl + "static/image.png");
               console.log(result);
+              alert(imageFile);
           },  function (error) {
               console.log(error);
     });
