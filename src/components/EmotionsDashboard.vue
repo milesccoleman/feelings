@@ -4,8 +4,8 @@
         <div><button id="snap" v-on:click="captureAndAnalyze()">Snap Photo</button></div>
         <canvas ref="canvas" id="canvas" width="640" height="480"></canvas>
         <ul>
-            <li v-for="c in captures">
-                <img id="img" ref="image" v-bind:src="c" height="50" />
+            <li v-for="url in captures">
+                <img id="img" ref="image" v-bind:src="url" height="50" />
             </li>
             <li>
               {{output}}
@@ -15,16 +15,18 @@
 </template>
 
 <script>
-    import axios from 'axios'
-    export default {
-        name: 'EmotionsDashboard',
-        data() {
-            return {
+import axios from 'axios';
+
+export default {
+  name: 'EmotionsDashboard',
+  data() {
+    return {
                 video: {},
                 canvas: {},
                 captures: [],
                 output: '',
-                imageToAnalyze: ''
+                imageToAnalyze: '',
+                url: ''
             }
         },
        mounted() {
@@ -47,26 +49,16 @@
         self.canvas = self.$refs.canvas;
         var context = self.canvas.getContext("2d").drawImage(self.video, 0, 0, 640, 480);
         self.captures.push(canvas.toDataURL("image/png"));
+        var imgURL = self.captures;
 
-        var image = self.canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");  // here is the most important part because if you dont replace you will get a DOM 18 exception.
-        var link = document.createElement('a');
-  link.download = "image.png";
-  link.href = image;
-  link.click();
-
-window.location.href = image;
-var url = location.href;
-var baseURL = url.substring(0, url.lastIndexOf('#'));
-var imageFile = baseURL + "static/image.png";
-
-          const formData = new FormData();
+            const formData = new FormData();
             formData.append('app_key', 'd08c791a788349a4bcfcaec6818a1c76');
-            formData.append('url', imageFile);
+            formData.append('url', imgURL);
             axios.post("https://api-face.sightcorp.com/api/detect/", formData)
               .then(function (result) {
               self.output = result.data;
               console.log(result);
-              alert(imageFile);
+              alert(imgURL);
           },  function (error) {
               console.log(error);
     });
