@@ -49,7 +49,7 @@ export default {
         self.canvas = self.$refs.canvas;
         var context = self.canvas.getContext("2d").drawImage(self.video, 0, 0, 640, 480);
         self.captures.push(canvas.toDataURL("image/png"));
-        var imgURL = self.captures;
+        var imgURL = location.href + self.captures;
 
             const formData = new FormData();
             formData.append('app_key', 'd08c791a788349a4bcfcaec6818a1c76');
